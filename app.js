@@ -2,7 +2,6 @@ const CONFIG = {
   FREE_MINUTES: 60,
   RATE_PER_HOUR: 20,
   CURRENCY: "฿",
-  SITE_CODE: "SMART PARKING IN 01",
   LOST_FEE: 100
 };
 
@@ -167,17 +166,16 @@ function renderTicket(view, params){
       <span class="badge ok">${tr('ticket_badge')}</span>
       <h1>${tr('ticket_title')}</h1>
       <p class="sub">${tr('ticket_sub')}</p>
-      <div class="row"><span class="label">${tr('label_tm')}</span><span class="value">${CONFIG.SITE_CODE}</span></div>
       <div class="row"><span class="label">${tr('label_date')}</span><span class="value">${fmtDate(t)}</span></div>
       <div class="row"><span class="label">${tr('label_time')}</span><span class="value">${fmtTime(t)}</span></div>
       <div class="row"><span class="label">${tr('label_ticketno')}</span><span class="value">${id}</span></div>
       <div class="qr-wrap qr-pop" id="qrcode" style="margin-top:20px;"></div>
       <p class="sub" style="margin:14px 0 0 0; text-align:center;">${tr('ticket_qr_note')}</p>
-      <div class="terms" style="margin-top:16px; padding-top:14px; border-top:1px dashed #bbb;">
-        <p class="terms-title" style="font-weight:700; text-align:center; margin:0 0 8px;">${tr('terms_title')}</p>
-        <p class="terms-price" style="text-align:center; margin:0 0 8px; font-size:0.9em;">${tr('footnote', CONFIG.RATE_PER_HOUR)}</p>
-        <p class="terms-text" style="font-size:0.78em; line-height:1.4; text-align:center; color:#555; margin:0 0 8px;">${tr('terms_disclaimer')}</p>
-        <p class="terms-lostfee" style="font-size:0.8em; font-weight:600; text-align:center; margin:0;">${tr('terms_lostfee', CONFIG.LOST_FEE)}</p>
+      <div class="terms">
+        <p class="terms-title">${tr('terms_title')}</p>
+        <p class="terms-price">${tr('footnote', CONFIG.RATE_PER_HOUR)}</p>
+        <p class="terms-text">${tr('terms_disclaimer')}</p>
+        <p class="terms-lostfee">${tr('terms_lostfee', CONFIG.LOST_FEE)}</p>
       </div>
     </div>
     <button class="btn btn-primary no-print" id="saveBtn">${tr('save_ticket_btn')}</button>
