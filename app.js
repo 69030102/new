@@ -63,13 +63,6 @@ function tr(k, ...args){
 
 function dtLocale(){ return LANG === "th" ? "th-TH" : "en-GB"; }
 
-function fmtDateTime(ms){
-  return new Date(ms).toLocaleString(dtLocale(), {
-    day:'2-digit', month:'2-digit', year:'numeric',
-    hour:'2-digit', minute:'2-digit', second:'2-digit', hour12: false
-  });
-}
-
 function fmtDate(ms){
   return new Date(ms).toLocaleDateString(dtLocale(), {
     day:'2-digit', month:'2-digit', year:'2-digit'
@@ -116,6 +109,7 @@ function buildUrl(path, params){
 function render(){
   const { path, params } = parseHash();
   const view = document.getElementById("view");
+  if(!view) return;
   view.innerHTML = "";
 
   if(path === "/") renderHome(view);
@@ -135,7 +129,9 @@ function renderHome(view){
     </div>
   `;
   const url = buildUrl("/checkin", {});
-  new QRCode(document.getElementById("qrcode"), { text: url, width: 200, height: 200, correctLevel: QRCode.CorrectLevel.M });
+  if(typeof QRCode !== "undefined"){
+    new QRCode(document.getElementById("qrcode"), { text: url, width: 200, height: 200, correctLevel: QRCode.CorrectLevel.M });
+  }
 }
 
 function handleCheckin(){
@@ -143,7 +139,7 @@ function handleCheckin(){
   try {
     if(window.pyscript && pyscript.interpreter && pyscript.interpreter.globals){
       const pyGen = pyscript.interpreter.globals.get('gen_ticket_id_py');
-      ticketId = pyGen();
+      if(typeof pyGen === 'function') ticketId = pyGen();
     }
   } catch(e) {}
   
@@ -159,7 +155,7 @@ function handleCheckin(){
 function renderTicket(view, params){
   const id = params.get("id");
   const t = Number(params.get("t"));
-  if(!id || !t) return renderNotFound(view);
+  if(!id || !t || isNaN(t)) return renderNotFound(view);
 
   view.innerHTML = `
     <div class="card" id="ticketCard">
@@ -182,21 +178,30 @@ function renderTicket(view, params){
   `;
 
   const checkoutUrl = buildUrl("/checkout", { id, t });
-  new QRCode(document.getElementById("qrcode"), { text: checkoutUrl, width: 180, height: 180, correctLevel: QRCode.CorrectLevel.M });
+  if(typeof QRCode !== "undefined"){
+    new QRCode(document.getElementById("qrcode"), { text: checkoutUrl, width: 180, height: 180, correctLevel: QRCode.CorrectLevel.M });
+  }
 
   playDing();
   vibrate(60);
 
-  document.getElementById("saveBtn").onclick = () => {
-    const card = document.getElementById("ticketCard");
-    card.querySelectorAll(".qr-pop").forEach(el => el.style.animation = "none");
-    html2canvas(card, { backgroundColor: "#ffffff", scale: 2 }).then(canvas => {
-      const link = document.createElement("a");
-      link.download = "parking-ticket-" + id + ".png";
-      link.href = canvas.toDataURL("image/png");
-      link.click();
-    });
-  };
+  const saveBtn = document.getElementById("saveBtn");
+  if(saveBtn){
+    saveBtn.onclick = () => {
+      if(typeof html2canvas === "undefined"){
+        alert("html2canvas library is missing!");
+        return;
+      }
+      const card = document.getElementById("ticketCard");
+      card.querySelectorAll(".qr-pop").forEach(el => el.style.animation = "none");
+      html2canvas(card, { backgroundColor: "#ffffff", scale: 2 }).then(canvas => {
+        const link = document.createElement("a");
+        link.download = "parking-ticket-" + id + ".png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      });
+    };
+  }
 }
 
 function renderNotFound(view){
