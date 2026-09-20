@@ -97,8 +97,10 @@
     box-shadow: var(--ring) 0px 0px 0px 1px, rgba(34,42,53,0.06) 0px 4px 10px;
   }
   .thaiqr-header{
-    background:#0c3f6e; padding:16px 22px; display:flex; align-items:center; justify-content:center;
+    background:#0c3f6e !important; padding:16px 22px; display:flex; align-items:center; justify-content:center;
     border-radius:20px 20px 0 0;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
   .thaiqr-header svg{ display:block; width:140px; height:auto; }
   .thaiqr-body{ background:#fff; padding:26px 22px 30px 22px; border-radius:0 0 20px 20px; }
@@ -145,6 +147,7 @@
   .warn{ border:1px solid #f0c36d; background:#fffaf0; }
   .warn .badge{ color:#8a5a00; background:#fdf0d5; }
 
+  /* ตำแหน่งปุ่มเปลี่ยนภาษาเดิม */
   .lang-toggle{
     position:absolute; top:2px; right:0;
     display:inline-flex; align-items:center; gap:5px;
@@ -156,10 +159,37 @@
   .lang-toggle:hover{ opacity:0.72; }
   .lang-toggle svg{ width:14px; height:14px; flex-shrink:0; }
 
+  /* ==================== PRINT STYLES ==================== */
   @media print{
-    body{ padding:0; }
-    .no-print{ display:none !important; }
-    .card{ box-shadow:none; border:1px solid #ddd; }
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+    body * {
+      visibility: hidden;
+    }
+    body {
+      padding: 0;
+      background: #fff;
+    }
+    .card, .card * {
+      visibility: visible;
+    }
+    .card {
+      position: absolute;
+      left: 50%;
+      top: 20px;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 420px;
+      box-shadow: none !important;
+      border: 1px solid #eee;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    .no-print, .brand, .lang-toggle, .btn, button {
+      display: none !important;
+    }
   }
 </style>
 </head>
